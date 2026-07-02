@@ -23,16 +23,16 @@
   <h1>Minhas Tarefas</h1>
   
   <form id="form-tarefa">
-    <input type="text" id="nova-tarefa" placeholder="Que bexiga eu tenho que fazer?" required>
-    <input type="text" id="horario-tarefa" placeholder="Ex: De 9h-9h30">
-    <button type="submit">Adicionar</button>
-  </form>
+  <input type="text" id="nova-tarefa" placeholder="Que bexiga eu tenho que fazer?" required>
+  <input type="text" id="horario-tarefa" placeholder="Ex: De 9h-9h30">
+  <button type="submit">Adicionar</button>
+</form>
 
   <ul id="lista-tarefas"></ul>
 
   <script>
     // IMPORTANTE: Substitua pela URL real do seu Cloudflare Worker
-    const API_URL = "https://listapi.robertajovemtech.workers.dev/";
+    const API_URL = "https://listapi.robertajovemtech.workers.dev";
 
     const lista = document.getElementById("lista-tarefas");
     const form = document.getElementById("form-tarefa");
