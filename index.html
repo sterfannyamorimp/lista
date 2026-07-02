@@ -23,7 +23,8 @@
   <h1>Minhas Tarefas</h1>
   
   <form id="form-tarefa">
-    <input type="text" id="nova-tarefa" placeholder="O que bexiga eu tenho que fazer?" required>
+    <input type="text" id="nova-tarefa" placeholder="Que bexiga eu tenho que fazer?" required>
+    <input type="text" id="horario-tarefa" placeholder="Ex: De 9h-9h30">
     <button type="submit">Adicionar</button>
   </form>
 
@@ -36,8 +37,8 @@
     const lista = document.getElementById("lista-tarefas");
     const form = document.getElementById("form-tarefa");
     const inputNova = document.getElementById("nova-tarefa");
+    const inputHorario = document.getElementById("horario-tarefa"); // NOVO CAMPO
 
-    // Lista todas as tarefas
     async function carregarTarefas() {
       const res = await fetch(`${API_URL}/tarefas`);
       const tarefas = await res.json();
@@ -46,48 +47,46 @@
       tarefas.forEach(t => {
         const li = document.createElement("li");
         
+        // Verifica se a tarefa tem horário para exibir
+        const textoHorario = t.horario ? `<strong>${t.horario}</strong> - ` : "";
+        
         li.innerHTML = `
           <input type="checkbox" ${t.concluida ? "checked" : ""} onchange="atualizarTarefa(${t.id}, this.checked)">
-          <span class="texto-tarefa ${t.concluida ? "concluida" : ""}">${t.texto}</span>
-          <button class="delete" onclick="deletarTarefa(${t.id})">Feito essa gota</button>
+          <span class="texto-tarefa ${t.concluida ? "concluida" : ""}">${textoHorario}${t.texto}</span>
+          <button class="delete" onclick="deletarTarefa(${t.id})">Apagar</button>
         `;
         lista.appendChild(li);
       });
     }
 
-    // Adiciona uma tarefa
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const texto = inputNova.value;
+      const horario = inputHorario.value; // PEGA O VALOR DO HORÁRIO
       
       await fetch(`${API_URL}/tarefas`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ texto })
+        body: JSON.stringify({ texto, horario }) // ENVIA O HORÁRIO PARA O BACKEND
       });
       
       inputNova.value = "";
-      carregarTarefas(); // Atualiza a interface
+      inputHorario.value = ""; // LIMPA O CAMPO APÓS ENVIAR
+      carregarTarefas(); 
     });
 
-    // Atualiza o status (Concluída)
     async function atualizarTarefa(id, concluida) {
       await fetch(`${API_URL}/tarefas/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ concluida })
       });
-      carregarTarefas(); // Atualiza a interface
+      carregarTarefas(); 
     }
 
-    // Apaga a tarefa
     async function deletarTarefa(id) {
       await fetch(`${API_URL}/tarefas/${id}`, { method: "DELETE" });
-      carregarTarefas(); // Atualiza a interface
+      carregarTarefas(); 
     }
 
-    // Inicializa a página carregando os dados
     carregarTarefas();
-  </script>
-</body>
-</html>
