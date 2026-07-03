@@ -6,72 +6,100 @@
   <title>Lista de Tarefas - Incremento 2</title>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Libre+Baskerville:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
   <style>
-    body { max-width: 600px; margin: 40px auto; padding: 20px; background: #ccb2f6; color: #17150F; }
-    h1 { color: #5092f6; }
-    form { display: flex; gap: 10px; margin-bottom: 20px; }
-    input[type="text"] { flex: 1; padding: 10px; border: 1px solid #db88ef; border-radius: 8px; }
-    button { padding: 10px 15px; background: #951ecc; color: white; border: none; border-radius: 8px; cursor: pointer; }
-    button.delete { background: #da22e4; }
+    body { max-width: 650px; margin: 40px auto; padding: 20px; background: #ccb2f6; color: #17150F; font-family: 'Libre Baskerville', serif; }
+    h1 { color: #5092f6; font-family: 'Instrument Serif', serif; font-size: 4.5rem; text-align: center; margin-bottom: 30px; }
+    
+    /* Ajustes no formulário para caber o novo campo */
+    form { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+    input[type="text"], select { flex: 1; padding: 10px; border: 1px solid #db88ef; border-radius: 8px; font-family: inherit; font-size: 1rem; }
+    select { min-width: 140px; color: #555; }
+    button { padding: 10px 20px; background: #951ecc; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem; }
+    button.delete { background: #da22e4; padding: 8px 12px; font-size: 0.9rem; }
+    
     ul { list-style: none; padding: 0; }
     li { display: flex; align-items: center; gap: 10px; background: white; padding: 15px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 1px 2px rgba(20,18,12,.04); }
     .texto-tarefa { flex: 1; }
     .concluida { text-decoration: line-through; color: #8852b0; }
+    
+    /* Estilo para a etiqueta do dia da semana */
+    .tag-dia { background: #E9D5FF; color: #6B21A8; padding: 3px 8px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; margin-right: 5px; font-family: system-ui, sans-serif; }
   </style>
 </head>
 <body>
 
-  <h2>Minhas Tarefas</h2>
+  <h1>Minhas Tarefas</h1>
   
   <form id="form-tarefa">
-  <input type="text" id="nova-tarefa" placeholder="Que bexiga eu tenho que fazer?" required>
-  <input type="text" id="horario-tarefa" placeholder="Ex: De 9h-9h30">
-  <button type="submit">Adicionar</button>
-</form>
+    <input type="text" id="nova-tarefa" placeholder="Que bexiga eu tenho que fazer?" required style="min-width: 100%;">
+    
+    <select id="dia-tarefa">
+      <option value="">Qualquer dia</option>
+      <option value="Segunda">Segunda-feira</option>
+      <option value="Terça">Terça-feira</option>
+      <option value="Quarta">Quarta-feira</option>
+      <option value="Quinta">Quinta-feira</option>
+      <option value="Sexta">Sexta-feira</option>
+      <option value="Sábado">Sábado</option>
+      <option value="Domingo">Domingo</option>
+    </select>
+    
+    <input type="text" id="horario-tarefa" placeholder="Ex: De 9h-9h30">
+    <button type="submit">Adicionar</button>
+  </form>
 
   <ul id="lista-tarefas"></ul>
 
   <script>
-    // IMPORTANTE: Substitua pela URL real do seu Cloudflare Worker
     const API_URL = "https://listapi.robertajovemtech.workers.dev";
 
     const lista = document.getElementById("lista-tarefas");
     const form = document.getElementById("form-tarefa");
     const inputNova = document.getElementById("nova-tarefa");
-    const inputHorario = document.getElementById("horario-tarefa"); // NOVO CAMPO
+    const inputHorario = document.getElementById("horario-tarefa");
+    const inputDia = document.getElementById("dia-tarefa"); // Pega a caixinha do dia
 
     async function carregarTarefas() {
-      const res = await fetch(`${API_URL}/tarefas`);
-      const tarefas = await res.json();
-      
-      lista.innerHTML = "";
-      tarefas.forEach(t => {
-        const li = document.createElement("li");
+      try {
+        const res = await fetch(`${API_URL}/tarefas`);
+        const tarefas = await res.json();
         
-        // Verifica se a tarefa tem horário para exibir
-        const textoHorario = t.horario ? `<strong>${t.horario}</strong> - ` : "";
-        
-        li.innerHTML = `
-          <input type="checkbox" ${t.concluida ? "checked" : ""} onchange="atualizarTarefa(${t.id}, this.checked)">
-          <span class="texto-tarefa ${t.concluida ? "concluida" : ""}">${textoHorario}${t.texto}</span>
-          <button class="delete" onclick="deletarTarefa(${t.id})">Apagar</button>
-        `;
-        lista.appendChild(li);
-      });
+        lista.innerHTML = "";
+        tarefas.forEach(t => {
+          const li = document.createElement("li");
+          
+          const textoHorario = t.horario ? `<strong>${t.horario}</strong> - ` : "";
+          // Verifica se a tarefa tem um dia salvo e cria a etiqueta colorida
+          const textoDia = t.dia_semana ? `<span class="tag-dia">${t.dia_semana}</span> ` : "";
+          
+          li.innerHTML = `
+            <input type="checkbox" ${t.concluida ? "checked" : ""} onchange="atualizarTarefa(${t.id}, this.checked)">
+            <span class="texto-tarefa ${t.concluida ? "concluida" : ""}">${textoDia}${textoHorario}${t.texto}</span>
+            <button class="delete" onclick="deletarTarefa(${t.id})">Apagar</button>
+          `;
+          lista.appendChild(li);
+        });
+      } catch (erro) {
+        console.error("Erro ao conectar com a API:", erro);
+      }
     }
 
     form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+      e.preventDefault(); 
+      
       const texto = inputNova.value;
-      const horario = inputHorario.value; // PEGA O VALOR DO HORÁRIO
+      const horario = inputHorario.value;
+      const dia_semana = inputDia.value; // Pega o valor escolhido no dia
       
       await fetch(`${API_URL}/tarefas`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ texto, horario }) // ENVIA O HORÁRIO PARA O BACKEND
+        // Envia o dia para o banco de dados
+        body: JSON.stringify({ texto, horario, dia_semana })
       });
       
       inputNova.value = "";
-      inputHorario.value = ""; // LIMPA O CAMPO APÓS ENVIAR
+      inputHorario.value = ""; 
+      inputDia.value = ""; // Reseta a caixinha para o valor padrão
       carregarTarefas(); 
     });
 
@@ -90,6 +118,6 @@
     }
 
     carregarTarefas();
-     </script>
+  </script>
 </body>
 </html>
