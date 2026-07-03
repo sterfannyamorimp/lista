@@ -6,44 +6,58 @@
   <title>Lista de Tarefas - Incremento 2</title>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Libre+Baskerville:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
   <style>
-    body { max-width: 650px; margin: 40px auto; padding: 20px; background: #ccb2f6; color: #17150F; font-family: 'Libre Baskerville', serif; }
-    h1 { color: #5092f6; font-family: 'Instrument Serif', serif; font-size: 4.5rem; text-align: center; margin-bottom: 30px; }
+    body { max-width: 700px; margin: 40px auto; padding: 20px; background: #ccb2f6; color: #17150F; font-family: 'Libre Baskerville', serif; }
+    h1 { color: #5092f6; font-family: 'Instrument Serif', serif; font-size: 4.5rem; text-align: center; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); }
     
-    /* Ajustes no formulário para caber o novo campo */
-    form { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
-    input[type="text"], select { flex: 1; padding: 10px; border: 1px solid #db88ef; border-radius: 8px; font-family: inherit; font-size: 1rem; }
-    select { min-width: 140px; color: #555; }
-    button { padding: 10px 20px; background: #951ecc; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem; }
-    button.delete { background: #da22e4; padding: 8px 12px; font-size: 0.9rem; }
+    /* --- ESTILO DAS ABAS --- */
+    .tabs { display: flex; gap: 8px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 10px; }
+    .tab-btn { background: #E9D5FF; color: #6B21A8; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.95rem; font-family: system-ui, sans-serif; transition: 0.2s; white-space: nowrap; }
+    .tab-btn:hover { background: #D8B4FE; }
+    /* Estilo da aba que está selecionada no momento */
+    .tab-btn.active { background: #6B21A8; color: white; box-shadow: 0 4px 6px rgba(107, 33, 168, 0.3); transform: translateY(-2px); }
+
+    /* --- FORMULÁRIO --- */
+    form { display: flex; gap: 10px; margin-bottom: 30px; }
+    input[type="text"] { flex: 1; padding: 12px; border: 1px solid #db88ef; border-radius: 8px; font-family: inherit; font-size: 1rem; outline: none; }
+    input[type="text"]:focus { border-color: #6B21A8; box-shadow: 0 0 0 2px rgba(107, 33, 168, 0.2); }
+    button[type="submit"] { padding: 12px 20px; background: #951ecc; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: 0.2s; font-family: system-ui, sans-serif; }
+    button[type="submit"]:hover { background: #7A18A8; }
+    button.delete { background: #da22e4; padding: 8px 12px; font-size: 0.9rem; border: none; border-radius: 6px; color: white; cursor: pointer; }
+    button.delete:hover { background: #B81CBF; }
     
-    ul { list-style: none; padding: 0; }
-    li { display: flex; align-items: center; gap: 10px; background: white; padding: 15px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 1px 2px rgba(20,18,12,.04); }
-    .texto-tarefa { flex: 1; }
-    .concluida { text-decoration: line-through; color: #8852b0; }
+    /* --- LISTA --- */
+    ul { list-style: none; padding: 0; margin: 0; }
+    li { display: flex; align-items: center; gap: 12px; background: white; padding: 16px; margin-bottom: 12px; border-radius: 10px; box-shadow: 0 2px 4px rgba(20,18,12,.06); transition: 0.2s; }
+    li:hover { box-shadow: 0 4px 8px rgba(20,18,12,.1); }
+    .texto-tarefa { flex: 1; font-size: 1.05rem; }
+    .concluida { text-decoration: line-through; color: #A89CBD; }
     
-    /* Estilo para a etiqueta do dia da semana */
-    .tag-dia { background: #E9D5FF; color: #6B21A8; padding: 3px 8px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; margin-right: 5px; font-family: system-ui, sans-serif; }
+    /* A etiqueta do dia não é mais tão necessária visualmente já que estamos em abas, 
+       mas deixei o horário em destaque */
+    .destaque-horario { color: #6B21A8; font-family: system-ui, sans-serif; font-size: 0.9rem; background: #F3E8FF; padding: 3px 8px; border-radius: 6px; margin-right: 8px; }
+    
+    /* Mensagem quando a aba está vazia */
+    .vazio { text-align: center; color: #6B21A8; font-style: italic; padding: 20px; opacity: 0.7; }
   </style>
 </head>
 <body>
 
   <h1>Minhas Tarefas</h1>
+
+  <div class="tabs" id="menu-abas">
+    <button class="tab-btn" data-dia="Geral">Geral</button>
+    <button class="tab-btn active" data-dia="Segunda">Segunda</button>
+    <button class="tab-btn" data-dia="Terça">Terça</button>
+    <button class="tab-btn" data-dia="Quarta">Quarta</button>
+    <button class="tab-btn" data-dia="Quinta">Quinta</button>
+    <button class="tab-btn" data-dia="Sexta">Sexta</button>
+    <button class="tab-btn" data-dia="Sábado">Sábado</button>
+    <button class="tab-btn" data-dia="Domingo">Domingo</button>
+  </div>
   
   <form id="form-tarefa">
-    <input type="text" id="nova-tarefa" placeholder="Que bexiga eu tenho que fazer?" required style="min-width: 100%;">
-    
-    <select id="dia-tarefa">
-      <option value="">Qualquer dia</option>
-      <option value="Segunda">Segunda-feira</option>
-      <option value="Terça">Terça-feira</option>
-      <option value="Quarta">Quarta-feira</option>
-      <option value="Quinta">Quinta-feira</option>
-      <option value="Sexta">Sexta-feira</option>
-      <option value="Sábado">Sábado</option>
-      <option value="Domingo">Domingo</option>
-    </select>
-    
-    <input type="text" id="horario-tarefa" placeholder="Ex: De 9h-9h30">
+    <input type="text" id="nova-tarefa" placeholder="Que bexiga eu tenho que fazer?" required>
+    <input type="text" id="horario-tarefa" placeholder="Ex: 9h - 10h" style="max-width: 140px;">
     <button type="submit">Adicionar</button>
   </form>
 
@@ -56,53 +70,89 @@
     const form = document.getElementById("form-tarefa");
     const inputNova = document.getElementById("nova-tarefa");
     const inputHorario = document.getElementById("horario-tarefa");
-    const inputDia = document.getElementById("dia-tarefa"); // Pega a caixinha do dia
+    const menuAbas = document.getElementById("menu-abas");
 
+    // Variáveis para guardar o estado atual da tela
+    let abaAtiva = "Segunda"; // Começa na segunda-feira por padrão
+    let todasAsTarefasBanco = []; // Guarda todas as tarefas para não ter que buscar no servidor toda hora que trocar de aba
+
+    // --- LÓGICA DE CLIQUE NAS ABAS ---
+    menuAbas.addEventListener("click", (e) => {
+      if (e.target.classList.contains("tab-btn")) {
+        // Remove a classe 'active' de todos os botões
+        document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+        
+        // Adiciona a classe 'active' no botão clicado
+        e.target.classList.add("active");
+        
+        // Atualiza a variável que diz qual é a aba atual e renderiza a lista de novo
+        abaAtiva = e.target.getAttribute("data-dia");
+        renderizarLista();
+      }
+    });
+
+    // --- BUSCAR DO BANCO DE DADOS ---
     async function carregarTarefas() {
       try {
         const res = await fetch(`${API_URL}/tarefas`);
-        const tarefas = await res.json();
-        
-        lista.innerHTML = "";
-        tarefas.forEach(t => {
-          const li = document.createElement("li");
-          
-          const textoHorario = t.horario ? `<strong>${t.horario}</strong> - ` : "";
-          // Verifica se a tarefa tem um dia salvo e cria a etiqueta colorida
-          const textoDia = t.dia_semana ? `<span class="tag-dia">${t.dia_semana}</span> ` : "";
-          
-          li.innerHTML = `
-            <input type="checkbox" ${t.concluida ? "checked" : ""} onchange="atualizarTarefa(${t.id}, this.checked)">
-            <span class="texto-tarefa ${t.concluida ? "concluida" : ""}">${textoDia}${textoHorario}${t.texto}</span>
-            <button class="delete" onclick="deletarTarefa(${t.id})">Apagar</button>
-          `;
-          lista.appendChild(li);
-        });
+        todasAsTarefasBanco = await res.json();
+        renderizarLista();
       } catch (erro) {
         console.error("Erro ao conectar com a API:", erro);
       }
     }
 
+    // --- MOSTRAR NA TELA (FILTRANDO PELA ABA) ---
+    function renderizarLista() {
+      lista.innerHTML = "";
+      
+      // Filtra as tarefas: se a tarefa não tem dia, ela pertence à aba "Geral"
+      const tarefasDestaAba = todasAsTarefasBanco.filter(t => {
+        const diaDaTarefa = t.dia_semana || "Geral"; // Trata valores vazios como "Geral"
+        return diaDaTarefa === abaAtiva;
+      });
+
+      if (tarefasDestaAba.length === 0) {
+        lista.innerHTML = `<p class="vazio">Nenhuma tarefa para ${abaAtiva.toLowerCase()}. Que paz!</p>`;
+        return;
+      }
+
+      tarefasDestaAba.forEach(t => {
+        const li = document.createElement("li");
+        const textoHorario = t.horario ? `<span class="destaque-horario">${t.horario}</span>` : "";
+        
+        li.innerHTML = `
+          <input type="checkbox" ${t.concluida ? "checked" : ""} onchange="atualizarTarefa(${t.id}, this.checked)" style="transform: scale(1.3); cursor: pointer;">
+          <span class="texto-tarefa ${t.concluida ? "concluida" : ""}">${textoHorario}${t.texto}</span>
+          <button class="delete" onclick="deletarTarefa(${t.id})">Apagar</button>
+        `;
+        lista.appendChild(li);
+      });
+    }
+
+    // --- ADICIONAR TAREFA ---
     form.addEventListener("submit", async (e) => {
       e.preventDefault(); 
       
       const texto = inputNova.value;
       const horario = inputHorario.value;
-      const dia_semana = inputDia.value; // Pega o valor escolhido no dia
+      // Pega o dia automaticamente baseado na aba que o usuário está visualizando
+      const dia_semana = abaAtiva === "Geral" ? "" : abaAtiva; 
       
       await fetch(`${API_URL}/tarefas`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        // Envia o dia para o banco de dados
         body: JSON.stringify({ texto, horario, dia_semana })
       });
       
       inputNova.value = "";
       inputHorario.value = ""; 
-      inputDia.value = ""; // Reseta a caixinha para o valor padrão
+      
+      // Recarrega o banco de dados para pegar o ID novo
       carregarTarefas(); 
     });
 
+    // --- ATUALIZAR STATUS ---
     async function atualizarTarefa(id, concluida) {
       await fetch(`${API_URL}/tarefas/${id}`, {
         method: "PUT",
@@ -112,11 +162,13 @@
       carregarTarefas(); 
     }
 
+    // --- APAGAR TAREFA ---
     async function deletarTarefa(id) {
       await fetch(`${API_URL}/tarefas/${id}`, { method: "DELETE" });
       carregarTarefas(); 
     }
 
+    // Inicia a aplicação buscando as tarefas
     carregarTarefas();
   </script>
 </body>
